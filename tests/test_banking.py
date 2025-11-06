@@ -3,7 +3,8 @@ from pages.manager_page import ManagerPage
 from utils.helpers import (
     generate_post_code,
     generate_first_name_from_post_code,
-    find_customer_to_delete
+    find_customer_to_delete,
+    generate_last_name 
 )
 
 
@@ -12,14 +13,13 @@ class TestBanking:
     @allure.story("Управление клиентами")
     @allure.title("Тест-кейс 1: Успешное создание нового клиента")
     def test_add_customer(self, manager_page: ManagerPage):
-        last_name = "Granger"
+        last_name = generate_last_name()
         post_code = generate_post_code()
         first_name = generate_first_name_from_post_code(post_code)
 
         manager_page.go_to_add_customer_tab()
         manager_page.add_new_customer(first_name, last_name, post_code)
 
-        # Переходим на страницу клиентов и получаем ее объект
         customers_page = manager_page.go_to_customers_tab()
         customers_page.search_customer(first_name)
         customers = customers_page.get_customers_data()
@@ -27,6 +27,7 @@ class TestBanking:
         assert len(customers) == 1
         new_customer = customers[0]
         assert new_customer["first_name"] == first_name
+        assert new_customer["last_name"] == last_name
 
     @allure.story("Управление клиентами")
     @allure.title("Тест-кейс 2: Сортировка клиентов по имени")

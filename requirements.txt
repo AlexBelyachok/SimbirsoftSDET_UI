@@ -5,3 +5,4 @@ pytest-xdist
 allure-pytest
 black
 python-dotenv
+Faker
