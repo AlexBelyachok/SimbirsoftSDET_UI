@@ -1,4 +1,3 @@
-
 name: Run SDET UI Tests and Publish Report
 
 on:
@@ -9,7 +8,12 @@ on:
   push:
     branches:
       - main
-      - master
+      - develop
+
+
+  pull_request:
+    branches:
+      - develop
 
 
 permissions:
@@ -18,44 +22,31 @@ permissions:
   id-token: write
 
 jobs:
-  run-tests:
-
-    name: Run UI Tests and Generate Report
-
+  run-ui-tests:
+    name: Run UI Tests and Publish Report
     runs-on: ubuntu-latest
-
     steps:
-
-      - name: Checkout code
+      - name: "1. Checkout repository"
         uses: actions/checkout@v4
 
-
-      - name: Set up Python
+      - name: "2. Set up Python 3.10"
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-
-      - name: Install dependencies
+      - name: "3. Install dependencies"
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+      
 
+      - name: "4. Run Pytest with Allure"
+        continue-on-error: true
+        run: python -m pytest --alluredir=allure-results
 
-      - name: Install Google Chrome
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-stable
-
-
-      - name: Run Pytest with Allure
-        run: pytest --alluredir=allure-results || true
-
-
-      - name: Generate and Deploy Allure Report
+      - name: "5. Generate and Deploy Allure Report to GitHub Pages"
+        if: always()
         uses: peaceiris/actions-allure-report@v3
         with:
-
           github_token: ${{ secrets.GITHUB_TOKEN }}
-
           allure_results_path: allure-results
