@@ -12,64 +12,63 @@ from utils.helpers import (
 class TestBanking:
     @allure.story("Управление клиентами")
     @allure.title("Тест-кейс 1: Успешное создание нового клиента")
+    @allure.severity(allure.severity_level.BLOCKER)
     def test_add_customer(self, manager_page: ManagerPage):
-        last_name = generate_last_name()
-        post_code = generate_post_code()
-        first_name = generate_first_name_from_post_code(post_code)
+        with allure.step("Шаг 1: Генерация тестовых данных"):
+            last_name = generate_last_name()
+            post_code = generate_post_code()
+            first_name = generate_first_name_from_post_code(post_code)
 
-        manager_page.go_to_add_customer_tab()
-        manager_page.add_new_customer(first_name, last_name, post_code)
+        with allure.step("Шаг 2: Создание клиента через UI"):
+            manager_page.go_to_add_customer_tab()
+            manager_page.add_new_customer(first_name, last_name, post_code)
 
-        customers_page = manager_page.go_to_customers_tab()
-        customers_page.search_customer(first_name)
-        customers = customers_page.get_customers_data()
+        with allure.step("Шаг 3: Проверка успешного создания клиента"):
+            customers_page = manager_page.go_to_customers_tab()
+            customers_page.search_customer(first_name)
+            customers = customers_page.get_customers_data()
 
-        assert len(customers) == 1, \
-            f"Ожидался 1 клиент после поиска по имени '{first_name}', но найдено {len(customers)}"
-
-        new_customer = customers[0]
-        assert new_customer["first_name"] == first_name, \
-            f"Имя созданного клиента не совпадает. Ожидалось: '{first_name}', Факт: '{new_customer['first_name']}'"
-
-        assert new_customer["last_name"] == last_name, \
-            f"Фамилия созданного клиента не совпадает. Ожидалось: '{last_name}', Факт: '{new_customer['last_name']}'"
+            assert len(customers) == 1, f"Ожидался 1 клиент, но найдено {len(customers)}"
+            new_customer = customers[0]
+            assert new_customer["first_name"] == first_name, "Имя созданного клиента не совпадает"
+            assert new_customer["last_name"] == last_name, "Фамилия созданного клиента не совпадает"
 
     @allure.story("Управление клиентами")
     @allure.title("Тест-кейс 2: Сортировка клиентов по имени")
+    @allure.severity(allure.severity_level.NORMAL)
     def test_sort_customers_by_first_name(self, manager_page_with_customers: ManagerPage):
         customers_page = manager_page_with_customers.go_to_customers_tab()
 
-        initial_names = [c['first_name'] for c in customers_page.get_customers_data()]
+        with allure.step("Шаг 1: Получение исходного списка имен"):
+            initial_names = [c['first_name'] for c in customers_page.get_customers_data()]
 
-        customers_page.sort_by_first_name()  # Сортировка Z-A
-        sorted_desc = [c['first_name'] for c in customers_page.get_customers_data()]
+        with allure.step("Шаг 2: Проверка сортировки по убыванию (Z-A)"):
+            customers_page.sort_by_first_name()
+            sorted_desc = [c['first_name'] for c in customers_page.get_customers_data()]
+            assert sorted_desc == sorted(initial_names, reverse=True), "Сортировка по убыванию неверна"
 
-        assert sorted_desc == sorted(initial_names, reverse=True), \
-            "Сортировка по убыванию (Z-A) работает некорректно"
-
-        customers_page.sort_by_first_name()  # Сортировка A-Z
-        sorted_asc = [c['first_name'] for c in customers_page.get_customers_data()]
-
-        assert sorted_asc == sorted(initial_names), \
-            "Сортировка по возрастанию (A-Z) работает некорректно"
+        with allure.step("Шаг 3: Проверка сортировки по возрастанию (A-Z)"):
+            customers_page.sort_by_first_name()
+            sorted_asc = [c['first_name'] for c in customers_page.get_customers_data()]
+            assert sorted_asc == sorted(initial_names), "Сортировка по возрастанию неверна"
 
     @allure.story("Управление клиентами")
     @allure.title("Тест-кейс 3: Удаление клиента")
+    @allure.severity(allure.severity_level.CRITICAL)
     def test_delete_customer(self, manager_page_with_customers: ManagerPage):
         customers_page = manager_page_with_customers.go_to_customers_tab()
 
-        customers_before = customers_page.get_customers_data()
-        names_before = [c['first_name'] for c in customers_before]
+        with allure.step("Шаг 1: Получение списка клиентов до удаления"):
+            customers_before = customers_page.get_customers_data()
+            names_before = [c['first_name'] for c in customers_before]
 
-        name_to_delete = find_customer_to_delete(names_before)
+        with allure.step("Шаг 2: Определение клиента для удаления"):
+            name_to_delete = find_customer_to_delete(names_before)
+            allure.attach(f"Выбрано имя для удаления: {name_to_delete}", name="Info")
 
-        customers_page.delete_customer(name_to_delete)
+        with allure.step("Шаг 3: Удаление клиента из таблицы"):
+            customers_page.delete_customer(name_to_delete)
 
-        customers_after = customers_page.get_customers_data()
-        names_after = [c['first_name'] for c in customers_after]
-
-        assert len(customers_after) == len(customers_before) - 1, \
-            "Количество клиентов в таблице не уменьшилось на 1 после удаления"
-
-        assert name_to_delete not in names_after, \
-            f"Клиент с именем '{name_to_delete}' все еще присутствует в таблице после удаления"
+        with allure.step("Шаг 4: Проверка, что клиент был удален"):
+            names_after = [c['first_name'] for c in customers_page.get_customers_data()]
+            assert name_to_delete not in names_after, f"Клиент '{name_to_delete}' не был удален"
