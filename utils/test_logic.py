@@ -1,20 +1,4 @@
-import random
 import string
-from faker import Faker
-
-
-fake = Faker("ru_RU")
-
-
-def generate_last_name() -> str:
-    """Генерирует случайную фамилию."""
-    return fake.last_name()
-
-
-
-def generate_post_code(length: int = 5) -> str:
-    """Генерирует случайный Post Code из 10 цифр."""
-    return "".join(random.choices(string.digits, k=length * 2))
 
 
 def generate_first_name_from_post_code(post_code: str) -> str:

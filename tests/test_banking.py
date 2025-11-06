@@ -1,10 +1,9 @@
 import allure
 from pages.manager_page import ManagerPage
-from utils.helpers import (
-    generate_post_code,
+from data.data_generator import data_generator
+from utils.test_logic import (
     generate_first_name_from_post_code,
-    find_customer_to_delete,
-    generate_last_name
+    find_customer_to_delete
 )
 
 
@@ -15,8 +14,8 @@ class TestBanking:
     @allure.severity(allure.severity_level.BLOCKER)
     def test_add_customer(self, manager_page: ManagerPage):
         with allure.step("Шаг 1: Генерация тестовых данных"):
-            last_name = generate_last_name()
-            post_code = generate_post_code()
+            last_name = data_generator.generate_last_name()
+            post_code = data_generator.generate_post_code()
             first_name = generate_first_name_from_post_code(post_code)
 
         with allure.step("Шаг 2: Создание клиента через UI"):
