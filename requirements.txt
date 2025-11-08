@@ -3,5 +3,7 @@ pytest
 webdriver-manager
 pytest-xdist
 allure-pytest
+flake8
 black
 python-dotenv
+Faker
