@@ -2,10 +2,12 @@ import random
 import string
 from faker import Faker
 
+
 class DataGenerator:
     """
     Класс для генерации различных тестовых данных.
     """
+
     def __init__(self, locale: str = "ru_RU"):
         self.fake = Faker(locale)
 
@@ -17,5 +19,5 @@ class DataGenerator:
         """Генерирует случайный Post Code из (length * 2) цифр."""
         return "".join(random.choices(string.digits, k=length * 2))
 
-# Создаем единый экземпляр класса для удобного импорта в тестах
+
 data_generator = DataGenerator()

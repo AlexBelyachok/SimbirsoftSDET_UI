@@ -8,7 +8,7 @@ def generate_first_name_from_post_code(post_code: str) -> str:
     first_name = ""
     alphabet = string.ascii_lowercase
     for i in range(0, len(post_code), 2):
-        part = post_code[i:i + 2]
+        part = post_code[i : i + 2]
         number = int(part)
         char_index = number % 26
         first_name += alphabet[char_index]

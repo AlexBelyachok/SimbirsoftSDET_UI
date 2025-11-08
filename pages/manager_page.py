@@ -2,6 +2,7 @@ from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
 from pages.customers_page import CustomersPage
 
+
 class ManagerPage(BasePage):
     ADD_CUSTOMER_TAB_BUTTON = (By.CSS_SELECTOR, "button[ng-click='addCust()']")
     CUSTOMERS_TAB_BUTTON = (By.CSS_SELECTOR, "button[ng-click='showCust()']")

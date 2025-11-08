@@ -25,10 +25,10 @@ def pytest_runtest_makereport(item, call):
     """Хук для добавления скриншота в Allure отчет при падении теста."""
     outcome = yield
     rep = outcome.get_result()
-    if rep.when == "call" and rep.failed and 'driver' in item.fixturenames:
-        driver = item.funcargs['driver']
+    if rep.when == "call" and rep.failed and "driver" in item.fixturenames:
+        driver = item.funcargs["driver"]
         allure.attach(
             driver.get_screenshot_as_png(),
             name="screenshot_on_failure",
-            attachment_type=AttachmentType.PNG
+            attachment_type=AttachmentType.PNG,
         )

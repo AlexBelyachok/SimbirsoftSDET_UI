@@ -16,20 +16,22 @@ class BasePage:
     def find_element(self, locator: Tuple[str, str], time: int = 10) -> WebElement:
         return WebDriverWait(self.driver, time).until(
             EC.presence_of_element_located(locator),
-            message=f"Не удалось найти элемент по локатору {locator}"
+            message=f"Не удалось найти элемент по локатору {locator}",
         )
 
-    def find_elements(self, locator: Tuple[str, str], time: int = 10) -> List[WebElement]:
+    def find_elements(
+        self, locator: Tuple[str, str], time: int = 10
+    ) -> List[WebElement]:
 
         return WebDriverWait(self.driver, time).until(
             EC.presence_of_all_elements_located(locator),
-            message=f"Не удалось найти элементы по локатору {locator}"
+            message=f"Не удалось найти элементы по локатору {locator}",
         )
 
     def click_element(self, locator: Tuple[str, str], time: int = 10) -> None:
         element = WebDriverWait(self.driver, time).until(
             EC.element_to_be_clickable(locator),
-            message=f"Элемент {locator} не кликабелен"
+            message=f"Элемент {locator} не кликабелен",
         )
         element.click()
 
@@ -42,7 +44,7 @@ class BasePage:
         try:
             alert = WebDriverWait(self.driver, time).until(
                 EC.alert_is_present(),
-                message="Alert не появился в течение указанного времени"
+                message="Alert не появился в течение указанного времени",
             )
             alert_text = alert.text
             if accept:

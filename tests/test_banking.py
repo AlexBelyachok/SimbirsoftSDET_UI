@@ -1,10 +1,7 @@
 import allure
 from pages.manager_page import ManagerPage
 from data.data_generator import data_generator
-from utils.test_logic import (
-    generate_first_name_from_post_code,
-    find_customer_to_delete
-)
+from utils.test_logic import generate_first_name_from_post_code, find_customer_to_delete
 
 
 @allure.feature("Функционал менеджера")
@@ -27,29 +24,43 @@ class TestBanking:
             customers_page.search_customer(first_name)
             customers = customers_page.get_customers_data()
 
-            assert len(customers) == 1, f"Ожидался 1 клиент, но найдено {len(customers)}"
+            assert (
+                len(customers) == 1
+            ), f"Ожидался 1 клиент, но найдено {len(customers)}"
             new_customer = customers[0]
-            assert new_customer["first_name"] == first_name, "Имя созданного клиента не совпадает"
-            assert new_customer["last_name"] == last_name, "Фамилия созданного клиента не совпадает"
+            assert (
+                new_customer["first_name"] == first_name
+            ), "Имя созданного клиента не совпадает"
+            assert (
+                new_customer["last_name"] == last_name
+            ), "Фамилия созданного клиента не совпадает"
 
     @allure.story("Управление клиентами")
     @allure.title("Тест-кейс 2: Сортировка клиентов по имени")
     @allure.severity(allure.severity_level.NORMAL)
-    def test_sort_customers_by_first_name(self, manager_page_with_customers: ManagerPage):
+    def test_sort_customers_by_first_name(
+        self, manager_page_with_customers: ManagerPage
+    ):
         customers_page = manager_page_with_customers.go_to_customers_tab()
 
         with allure.step("Шаг 1: Получение исходного списка имен"):
-            initial_names = [c['first_name'] for c in customers_page.get_customers_data()]
+            initial_names = [
+                c["first_name"] for c in customers_page.get_customers_data()
+            ]
 
         with allure.step("Шаг 2: Проверка сортировки по убыванию (Z-A)"):
             customers_page.sort_by_first_name()
-            sorted_desc = [c['first_name'] for c in customers_page.get_customers_data()]
-            assert sorted_desc == sorted(initial_names, reverse=True), "Сортировка по убыванию неверна"
+            sorted_desc = [c["first_name"] for c in customers_page.get_customers_data()]
+            assert sorted_desc == sorted(
+                initial_names, reverse=True
+            ), "Сортировка по убыванию неверна"
 
         with allure.step("Шаг 3: Проверка сортировки по возрастанию (A-Z)"):
             customers_page.sort_by_first_name()
-            sorted_asc = [c['first_name'] for c in customers_page.get_customers_data()]
-            assert sorted_asc == sorted(initial_names), "Сортировка по возрастанию неверна"
+            sorted_asc = [c["first_name"] for c in customers_page.get_customers_data()]
+            assert sorted_asc == sorted(
+                initial_names
+            ), "Сортировка по возрастанию неверна"
 
     @allure.story("Управление клиентами")
     @allure.title("Тест-кейс 3: Удаление клиента")
@@ -59,7 +70,7 @@ class TestBanking:
 
         with allure.step("Шаг 1: Получение списка клиентов до удаления"):
             customers_before = customers_page.get_customers_data()
-            names_before = [c['first_name'] for c in customers_before]
+            names_before = [c["first_name"] for c in customers_before]
 
         with allure.step("Шаг 2: Определение клиента для удаления"):
             name_to_delete = find_customer_to_delete(names_before)
@@ -69,5 +80,7 @@ class TestBanking:
             customers_page.delete_customer(name_to_delete)
 
         with allure.step("Шаг 4: Проверка, что клиент был удален"):
-            names_after = [c['first_name'] for c in customers_page.get_customers_data()]
-            assert name_to_delete not in names_after, f"Клиент '{name_to_delete}' не был удален"
+            names_after = [c["first_name"] for c in customers_page.get_customers_data()]
+            assert (
+                name_to_delete not in names_after
+            ), f"Клиент '{name_to_delete}' не был удален"
