@@ -7,13 +7,12 @@ on:
 
   push:
     branches:
-      - main
-      - develop
+      - task_ui
 
 
   pull_request:
     branches:
-      - develop
+      - master
 
 
 permissions:
