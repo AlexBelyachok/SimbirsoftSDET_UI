@@ -45,7 +45,7 @@ jobs:
 
       - name: "5. Generate and Deploy Allure Report to GitHub Pages"
         if: always()
-        uses: peaceiris/actions-allure-report@v3
+        uses: peaceiris/actions-allure-report@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           allure_results_path: allure-results
