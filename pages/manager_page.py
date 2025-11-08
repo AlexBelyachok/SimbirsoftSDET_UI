@@ -18,10 +18,7 @@ class ManagerPage(BasePage):
         self.fill_field(self.LAST_NAME_INPUT, last_name)
         self.fill_field(self.POST_CODE_INPUT, post_code)
         self.click_element(self.ADD_CUSTOMER_SUBMIT_BUTTON)
-        try:
-            self.driver.switch_to.alert.accept()
-        except:
-            pass
+        self.handle_alert()
 
     def go_to_customers_tab(self) -> CustomersPage:
         self.click_element(self.CUSTOMERS_TAB_BUTTON)

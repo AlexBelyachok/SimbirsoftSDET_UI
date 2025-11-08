@@ -1,4 +1,5 @@
 from typing import List, Tuple
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import WebDriverWait
@@ -36,3 +37,19 @@ class BasePage:
         element = self.find_element(locator, time)
         element.clear()
         element.send_keys(text)
+
+    def handle_alert(self, accept: bool = True, time: int = 10) -> str | None:
+        try:
+            alert = WebDriverWait(self.driver, time).until(
+                EC.alert_is_present(),
+                message="Alert не появился в течение указанного времени"
+            )
+            alert_text = alert.text
+            if accept:
+                alert.accept()
+            else:
+                alert.dismiss()
+            return alert_text
+        except TimeoutException:
+            print("Alert не был найден.")
+            return None
