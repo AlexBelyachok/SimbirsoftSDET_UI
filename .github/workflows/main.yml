@@ -1,65 +1,50 @@
 name: Run SDET UI Tests and Publish Report
 
 on:
-
-  workflow_dispatch:
-
-
   push:
     branches:
       - task_ui
-
-
   pull_request:
     branches:
       - master
 
-
-permissions:
-  contents: write
-  pages: write
-  id-token: write
-
 jobs:
-  run-ui-tests:
-    name: Run UI Tests and Generate Report
+  test:
     runs-on: ubuntu-latest
+
     steps:
-      - name: "1. Checkout repository"
-        uses: actions/checkout@v4
+    - name: Check out code
+      uses: actions/checkout@v3
 
-      - name: "2. Set up Python 3.10"
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
 
-      - name: "3. Set up Java 17 for Allure"
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
+    - name: Add project root to PYTHONPATH
+      run: |
+        echo "PYTHONPATH=$PYTHONPATH:." >> $GITHUB_ENV
 
-      - name: "4. Install dependencies"
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
 
-      - name: "5. Run Pytest with Allure"
-        continue-on-error: true
-        run: python -m pytest --alluredir=allure-results
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        # Установка зависимостей из requirements.txt
+        pip install -r requirements.txt
 
-      - name: "6. Generate Allure Report"
-        if: always()
-        run: |
-          # Скачиваем и распаковываем Allure CLI
-          wget https://github.com/allure-framework/allure2/releases/download/2.29.0/allure-2.29.0.tgz
-          tar -zxvf allure-2.29.0.tgz
-          # Генерируем HTML-отчет в папку allure-report
-          ./allure-2.29.0/bin/allure generate allure-results --clean -o allure-report
+    - name: Install Google Chrome (Necessary for CI)
+      run: |
+        sudo apt-get update
+        sudo apt-get install google-chrome-stable
 
-      - name: "7. Upload Allure Report Artifact"
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-report
-          path: allure-report
+    - name: Run tests with Allure (and parallel launch -n 2)
+      run: |
+        pytest -n 2 --alluredir=./allure-results
+      env:
+        HEADLESS: "true"
+
+    - name: Upload Allure results
+      uses: actions/upload-artifact@v4
+      with:
+        name: allure-results
+        path: allure-results
